@@ -59,9 +59,6 @@ class _CreateSessionPageState extends State<CreateSessionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Créer une Session'),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

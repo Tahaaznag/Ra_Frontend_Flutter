@@ -43,6 +43,7 @@ dependencies:
   flutter_webrtc: ^0.10.7
   permission_handler: ^11.3.1
   shared_preferences: ^2.0.15
+  animated_text_kit: ^4.2.2
 
 dev_dependencies:
   flutter_test:

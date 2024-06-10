@@ -17,6 +17,8 @@ class _LoginPage extends State<LoginPage> {
   final _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
 
+  bool _isPasswordVisible = false;
+
   void _login() async {
     if (_formKey.currentState!.validate()) {
       final email = _emailController.text;
@@ -24,23 +26,18 @@ class _LoginPage extends State<LoginPage> {
 
       final success = await _authService.login(email, password);
 
-      if (success) {Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
+      if (success) {
+        Navigator.pushReplacementNamed(context, '/home');
       } else {
-        // Affichez un message d'erreur
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Login failed'),
         ));
       }
     }
   }
+
   void _navigateToRegister() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => RegisterPage()),
-    );
+    Navigator.pushNamed(context, '/register');
   }
 
   @override
@@ -65,7 +62,7 @@ class _LoginPage extends State<LoginPage> {
                       bottomRight: Radius.circular(50),
                     )),
                 child: Padding(
-                  padding: const EdgeInsets.all(1.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
                       SizedBox(height: 100,),
@@ -93,16 +90,16 @@ class _LoginPage extends State<LoginPage> {
                         },
                         style: TextStyle(fontSize: 20, color: Colors.white),
                         decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white.withOpacity(0.1),
                           border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide.none,
                           ),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         ),
                       ),
-                      Container(
-                        height: 5,
-                        color: Colors.white,
-                      ),
-                      SizedBox(height: 60,),
+                      SizedBox(height: 10),
                       Align(
                         alignment: Alignment.center,
                         child: Text("Password", style: GoogleFonts.roboto(
@@ -113,7 +110,7 @@ class _LoginPage extends State<LoginPage> {
                       ),
                       TextFormField(
                         controller: _passwordController,
-                        obscureText: true,
+                        obscureText: !_isPasswordVisible,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your password';
@@ -122,14 +119,25 @@ class _LoginPage extends State<LoginPage> {
                         },
                         style: TextStyle(fontSize: 20, color: Colors.white),
                         decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white.withOpacity(0.1),
                           border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide.none,
                           ),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          ),
                         ),
-                      ),
-                      Container(
-                        height: 5,
-                        color: Colors.white,
                       ),
                       SizedBox(height: 60,),
                       GestureDetector(
@@ -149,22 +157,19 @@ class _LoginPage extends State<LoginPage> {
                   ),
                 ),
               ),
+              SizedBox(height: 20,),
               Container(
                 height: 70,
                 width: 70,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red, // Background color
+                    backgroundColor: Colors.red,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40), // Rounded corners
+                      borderRadius: BorderRadius.circular(40),
                     ),
                   ),
                   onPressed: _login,
-                  child: Icon(
-                    Icons.arrow_forward,
-                    size: 20,
-                    color: Colors.white, // Icon color (set to black or another color you prefer)
-                  ),
+                  child: Icon(Icons.arrow_forward, size: 40, color: Colors.white,),
                 ),
               ),
             ],

@@ -38,7 +38,7 @@ class AuthService {
     }
   }
 
-  Future<bool> register(String email, String password, String name, String prenom) async {
+  Future<bool> register(String email, String password, String name, String prenom, String role) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/register'),
@@ -50,6 +50,7 @@ class AuthService {
           'prenom': prenom,
           'email': email,
           'password': password,
+          'role': role,
         }),
       );
 
@@ -64,6 +65,11 @@ class AuthService {
       print('An error occurred during registration: $e');
       return false;
     }
+  }
+  Future<bool> checkAuth() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token');
+    return token != null;
   }
 
 }

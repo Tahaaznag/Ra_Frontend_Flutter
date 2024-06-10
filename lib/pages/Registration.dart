@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:remote_assist/Service/AuthService.dart';
@@ -17,14 +18,24 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
+  String? _selectedRole;
+  bool _isPasswordVisible = false;
 
   Future<void> _register() async {
     if (_formKey.currentState?.validate() ?? false) {
+      if (_selectedRole == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please select a role.')),
+        );
+        return;
+      }
+
       final success = await _authService.register(
         _emailController.text,
         _passwordController.text,
         _nameController.text,
         _prenomController.text,
+        _selectedRole!,
       );
 
       if (success) {
@@ -52,7 +63,6 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Column(
             children: [
               Container(
-                height: 800,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                   color: Colors.red,
@@ -84,6 +94,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       SizedBox(height: 30,),
                       _buildTextField("Password", _passwordController, obscureText: true),
                       SizedBox(height: 30,),
+                      _buildRoleDropdown(),
+                      SizedBox(height: 30,),
                       Center(
                         child: GestureDetector(
                           onTap: () {
@@ -100,10 +112,12 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ),
                       ),
+                      SizedBox(height: 30,),
                     ],
                   ),
                 ),
               ),
+              SizedBox(height: 30,),
               Container(
                 height: 70,
                 width: 70,
@@ -122,6 +136,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
               ),
+              SizedBox(height: 30,),
             ],
           ),
         ),
@@ -152,16 +167,63 @@ class _RegisterPageState extends State<RegisterPage> {
           },
           style: TextStyle(fontSize: 20, color: Colors.white),
           decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white.withOpacity(0.1),
             border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide.none,
             ),
+            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            suffixIcon: obscureText
+                ? IconButton(
+              icon: Icon(
+                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                setState(() {
+                  _isPasswordVisible = !_isPasswordVisible;
+                });
+              },
+            )
+                : null,
           ),
         ),
-        Container(
-          height: 5,
-          color: Colors.white,
-        ),
+
       ],
+    );
+  }
+
+  Widget _buildRoleDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _selectedRole,
+      items: [
+        DropdownMenuItem(value: "EXPERT", child: Text("Expert")),
+        DropdownMenuItem(value: "TECHNCIEN", child: Text("Technicien")),
+        DropdownMenuItem(value: "GUEST", child: Text("Guest")),
+      ],
+      onChanged: (value) {
+        setState(() {
+          _selectedRole = value;
+        });
+      },
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.1),
+        labelText: "Select Role",
+        labelStyle: TextStyle(color: Colors.white),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      ),
+      validator: (value) {
+        if (value == null) {
+          return 'Please select a role';
+        }
+        return null;
+      },
     );
   }
 }

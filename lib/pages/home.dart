@@ -4,6 +4,7 @@ import 'package:remote_assist/pages/Login.dart';
 import 'package:remote_assist/pages/Registration.dart';
 import 'package:remote_assist/pages/SessionPage.dart';
 import 'package:remote_assist/pages/VideoCallPage.dart';
+import 'package:remote_assist/pages/WelcomePage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -22,32 +23,59 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
-      appBar: AppBar(title: const Text("BL Remote Assist")),
+      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        title: const Text(
+          "BL Remote Assist",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.red[500],
+        elevation: 5,
+        centerTitle: true,
+      ),
       bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.transparent,
+        color: Colors.red[500],
+        buttonBackgroundColor: Colors.white,
+        height: 60,
         items: [
-          CurvedNavigationBarItem(icon: Icon(Icons.add, size: 30), label: "New Meeting"),
-          CurvedNavigationBarItem(icon: Icon(Icons.logout_rounded, size: 30), label: "Logout"),
-          CurvedNavigationBarItem(icon: Icon(Icons.settings, size: 30), label: "Settings"),
-          CurvedNavigationBarItem(icon: Icon(Icons.app_registration, size: 30), label: "Registration"),
+          CurvedNavigationBarItem(icon: Icon(Icons.video_call, size: 30, color: Colors.red[500]), label: "New Meeting"),
+          CurvedNavigationBarItem(icon: Icon(Icons.logout_rounded, size: 30, color: Colors.red[500]), label: "Logout"),
+          CurvedNavigationBarItem(icon: Icon(Icons.settings, size: 30, color: Colors.red[500]), label: "Settings"),
+          CurvedNavigationBarItem(icon: Icon(Icons.app_registration, size: 30, color: Colors.red[500]), label: "Registration"),
         ],
         index: _pageIndex,
         onTap: (index) {
           setState(() {
             _pageIndex = index;
-            _pageController.jumpToPage(index);
+            if (index == 1) {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => WelcomePage()));
+            } if (index == 0) {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+
+            }
+            else {
+              _pageController.jumpToPage(index);
+            }
           });
         },
       ),
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _pageIndex = index;
-          });
-        },
-        children: _pages,
+      body: Stack(
+        children: [
+          PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _pageIndex = index;
+              });
+            },
+            children: _pages,
+          ),
+        ],
       ),
     );
   }
