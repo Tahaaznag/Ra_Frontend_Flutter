@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  final String baseUrl = 'http://10.50.100.15:8081'; // Remplacez par l'URL de votre backend
+  final String baseUrl = 'http://10.50.100.15:8081';
 
   Future<bool> login(String email, String password) async {
     try {

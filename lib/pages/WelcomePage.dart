@@ -12,26 +12,35 @@ class WelcomePage extends StatelessWidget {
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.redAccent, Colors.red],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        color: Colors.white, // Fond blanc
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Spacer(),
+            Image.asset(
+              'lib/icons/images/image1.png', // Remplacez par le chemin de votre image
+              height: 200,
+            ),
+            SizedBox(height: 30),
             Text(
               "Bienvenue à BL Remote Assist",
-              style: GoogleFonts.pacifico(
-                fontSize: 40,
+              style: GoogleFonts.dmSerifText(
+                fontSize: 30,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Colors.black, // Texte noir pour un bon contraste avec le fond blanc
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 50),
+            SizedBox(height: 20),
+            Text(
+              "Commencez votre assistant à distance",
+              style: GoogleFonts.roboto(
+                fontSize: 18,
+                color: Colors.grey[700],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 40),
             _buildNavigationButton(
               context,
               "Login",
@@ -39,7 +48,7 @@ class WelcomePage extends StatelessWidget {
               Colors.white,
               LoginPage(),
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 20),
             _buildNavigationButton(
               context,
               "Register",
@@ -47,6 +56,7 @@ class WelcomePage extends StatelessWidget {
               Colors.white,
               RegisterPage(),
             ),
+            Spacer(),
           ],
         ),
       ),
@@ -65,7 +75,7 @@ class WelcomePage extends StatelessWidget {
         width: MediaQuery.of(context).size.width * 0.8,
         padding: EdgeInsets.symmetric(vertical: 15),
         decoration: BoxDecoration(
-          color: Colors.red.shade700,
+          color: Colors.red,
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:remote_assist/Service/AuthService.dart';
@@ -54,6 +53,10 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
+  void _navigateToLogin() {
+    Navigator.pushNamed(context, '/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,80 +66,68 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Column(
             children: [
               Container(
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  boxShadow: [
-                    BoxShadow(
-                        blurRadius: 10, color: Colors.black, offset: Offset(1, 5))
-                  ],
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(50),
-                    bottomRight: Radius.circular(50),
+                padding: EdgeInsets.all(20),
+                margin: EdgeInsets.only(top: 40),
+                child: Center(
+                  child: Text(
+                    "Bienvenue sur BL Remote Assist",
+                    style: GoogleFonts.roboto(
+                      color: Colors.black,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 50,),
-                      Text("Register", style: GoogleFonts.pacifico(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 50,
-                          color: Colors.white
-                      )),
-                      SizedBox(height: 30,),
-                      _buildTextField("Name", _nameController),
-                      SizedBox(height: 30,),
-                      _buildTextField("Prenom", _prenomController),
-                      SizedBox(height: 30,),
-                      _buildTextField("Email", _emailController),
-                      SizedBox(height: 30,),
-                      _buildTextField("Password", _passwordController, obscureText: true),
-                      SizedBox(height: 30,),
-                      _buildRoleDropdown(),
-                      SizedBox(height: 30,),
-                      Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => LoginPage()),
-                            );
-                          },
-                          child: Text("Already have an account?",
-                            style: GoogleFonts.roboto(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: Colors.white),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildTextField("Nom", _nameController),
+                    SizedBox(height: 20),
+                    _buildTextField("Prénom", _prenomController),
+                    SizedBox(height: 20),
+                    _buildTextField("Email", _emailController),
+                    SizedBox(height: 20),
+                    _buildTextField("Mot de passe", _passwordController, obscureText: true),
+                    SizedBox(height: 20),
+                    _buildRoleDropdown(),
+                    SizedBox(height: 30),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 30), backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: _register,
+                        child: Text(
+                          "S'inscrire",
+                          style: GoogleFonts.roboto(fontSize: 18, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Center(
+                      child: GestureDetector(
+                        onTap: _navigateToLogin,
+                        child: Text(
+                          "Vous avez déjà un compte ? Connectez-vous",
+                          style: GoogleFonts.roboto(
+                            fontSize: 16,
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      SizedBox(height: 30,),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 30,),
-              Container(
-                height: 70,
-                width: 70,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40),
                     ),
-                  ),
-                  onPressed: _register,
-                  child: Icon(
-                    Icons.arrow_forward,
-                    size: 20,
-                    color: Colors.white,
-                  ),
+                  ],
                 ),
               ),
-              SizedBox(height: 30,),
             ],
           ),
         ),
@@ -148,29 +139,29 @@ class _RegisterPageState extends State<RegisterPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Align(
-          alignment: Alignment.center,
-          child: Text(label, style: GoogleFonts.roboto(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: Colors.white,
-          )),
+        Text(
+          label,
+          style: GoogleFonts.roboto(
+            fontSize: 18,
+            color: Colors.black,
+          ),
         ),
+        SizedBox(height: 10),
         TextFormField(
           controller: controller,
-          obscureText: obscureText,
+          obscureText: obscureText ? !_isPasswordVisible : false,
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Please enter your $label';
+              return 'Veuillez entrer votre $label';
             }
             return null;
           },
-          style: TextStyle(fontSize: 20, color: Colors.white),
+          style: TextStyle(fontSize: 20, color: Colors.black),
           decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.white.withOpacity(0.1),
+            fillColor: Colors.grey[200],
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide.none,
             ),
             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -178,7 +169,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ? IconButton(
               icon: Icon(
                 _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                color: Colors.white,
+                color: Colors.grey,
               ),
               onPressed: () {
                 setState(() {
@@ -189,41 +180,51 @@ class _RegisterPageState extends State<RegisterPage> {
                 : null,
           ),
         ),
-
       ],
     );
   }
 
   Widget _buildRoleDropdown() {
-    return DropdownButtonFormField<String>(
-      value: _selectedRole,
-      items: [
-        DropdownMenuItem(value: "EXPERT", child: Text("Expert")),
-        DropdownMenuItem(value: "TECHNCIEN", child: Text("Technicien")),
-        DropdownMenuItem(value: "GUEST", child: Text("Guest")),
-      ],
-      onChanged: (value) {
-        setState(() {
-          _selectedRole = value;
-        });
-      },
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: Colors.white.withOpacity(0.1),
-        labelText: "Select Role",
-        labelStyle: TextStyle(color: Colors.white),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide.none,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Sélectionner un rôle",
+          style: GoogleFonts.roboto(
+            fontSize: 18,
+            color: Colors.black,
+          ),
         ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      ),
-      validator: (value) {
-        if (value == null) {
-          return 'Please select a role';
-        }
-        return null;
-      },
+        SizedBox(height: 10),
+        DropdownButtonFormField<String>(
+          value: _selectedRole,
+          items: [
+            DropdownMenuItem(value: "EXPERT", child: Text("Expert")),
+            DropdownMenuItem(value: "TECHNICIEN", child: Text("Technicien")),
+            DropdownMenuItem(value: "GUEST", child: Text("Guest")),
+          ],
+          onChanged: (value) {
+            setState(() {
+              _selectedRole = value;
+            });
+          },
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.grey[200],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          ),
+          validator: (value) {
+            if (value == null) {
+              return 'Veuillez sélectionner un rôle';
+            }
+            return null;
+          },
+        ),
+      ],
     );
   }
 }

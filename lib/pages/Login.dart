@@ -8,10 +8,10 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPage();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPage extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -49,133 +49,181 @@ class _LoginPage extends State<LoginPage> {
           child: Column(
             children: [
               Container(
-                height: 650,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                    color: Colors.red,
-                    boxShadow: [
-                      BoxShadow(
-                          blurRadius: 10, color: Colors.black, offset: Offset(1, 5))
-                    ],
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(50),
-                      bottomRight: Radius.circular(50),
-                    )),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 100,),
-                      Text("Login", style: GoogleFonts.pacifico(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 50,
-                          color: Colors.white
-                      )),
-                      SizedBox(height: 60,),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Text("Email", style: GoogleFonts.roboto(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.white,
-                        )),
-                      ),
-                      TextFormField(
-                        controller: _emailController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
-                          }
-                          return null;
-                        },
-                        style: TextStyle(fontSize: 20, color: Colors.white),
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.1),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide.none,
-                          ),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Text("Password", style: GoogleFonts.roboto(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.white,
-                        )),
-                      ),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: !_isPasswordVisible,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your password';
-                          }
-                          return null;
-                        },
-                        style: TextStyle(fontSize: 20, color: Colors.white),
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.1),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide.none,
-                          ),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isPasswordVisible = !_isPasswordVisible;
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 60,),
-                      GestureDetector(
-                        onTap: _navigateToRegister,
-                        child: Center(
-                          child: Text(
-                            "Don't have an account?",
-                            style: GoogleFonts.roboto(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                padding: EdgeInsets.all(20),
+                margin: EdgeInsets.only(top: 40),
+                child: Center(
+                  child: Text(
+                    "Bienvenue sur BL Remote Assist",
+                    style: GoogleFonts.roboto(
+                      color: Colors.black,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
-              SizedBox(height: 20,),
-              Container(
-                height: 70,
-                width: 70,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Adresse e-mail ",
+                      style: GoogleFonts.roboto(fontSize: 18, color: Colors.black),
                     ),
-                  ),
-                  onPressed: _login,
-                  child: Icon(Icons.arrow_forward, size: 40, color: Colors.white,),
+                    SizedBox(height: 10),
+                    TextFormField(
+                      controller: _emailController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Veuillez entrer votre email';
+                        }
+                        return null;
+                      },
+                      style: TextStyle(fontSize: 20, color: Colors.black),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Text(
+                      "Mot de passe",
+                      style: GoogleFonts.roboto(fontSize: 18, color: Colors.black),
+                    ),
+                    SizedBox(height: 10),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: !_isPasswordVisible,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Veuillez entrer votre mot de passe';
+                        }
+                        return null;
+                      },
+                      style: TextStyle(fontSize: 20, color: Colors.black),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {
+                          // Ajouter une action pour mot de passe oublié
+                        },
+                        child: Text(
+                          "Mot de passe oublié?",
+                          style: GoogleFonts.roboto(color: Colors.red),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 30),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 30),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          backgroundColor: Colors.red,
+                        ),
+                        onPressed: _login,
+                        child: Text(
+                          "Se connecter",
+                          style: GoogleFonts.roboto(fontSize: 18, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Center(
+                      child: Text(
+                        "Ou continuer avec",
+                        style: GoogleFonts.roboto(fontSize: 16, color: Colors.grey),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    //   children: [
+                    //     _buildSocialLoginButton(
+                    //       "Connexion avec Google",
+                    //       Icons.google,
+                    //       Colors.red,
+                    //     ),
+                    //     _buildSocialLoginButton(
+                    //       "Connexion avec Facebook",
+                    //       Icons.facebook,
+                    //       Colors.blue,
+                    //     ),
+                    //   ],
+                    // ),
+                    SizedBox(height: 20),
+                    Center(
+                      child: GestureDetector(
+                        onTap: _navigateToRegister,
+                        child: Text(
+                          "Vous n'avez pas de compte ? Enregistrez-vous",
+                          style: GoogleFonts.roboto(
+                            fontSize: 16,
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSocialLoginButton(String text, IconData icon, Color color) {
+    return ElevatedButton.icon(
+      style: ElevatedButton.styleFrom(
+        foregroundColor: color, backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        side: BorderSide(color: color),
+      ),
+      icon: Icon(icon),
+      label: Text(
+        text,
+        style: GoogleFonts.roboto(color: color),
+      ),
+      onPressed: () {
+        // Ajouter l'action de connexion sociale ici
+      },
     );
   }
 }
