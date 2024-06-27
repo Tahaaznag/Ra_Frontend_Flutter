@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
 class AuthService {
+
   final String baseUrl = 'http://10.50.100.6:8081';
 
   Future<bool> login(String email, String password) async {
@@ -18,7 +18,7 @@ class AuthService {
         }),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 202 || response.statusCode == 202){
         final responseBody = jsonDecode(response.body);
         final token = responseBody['token'];
 
@@ -37,6 +37,7 @@ class AuthService {
       return false;
     }
   }
+
 
   Future<bool> register(String email, String password, String name, String prenom, String role) async {
     try {
@@ -66,10 +67,10 @@ class AuthService {
       return false;
     }
   }
+
   Future<bool> checkAuth() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');
     return token != null;
   }
-
 }

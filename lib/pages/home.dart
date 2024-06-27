@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar_with_label/curved_navigation_bar.dart';
 import 'package:remote_assist/pages/Login.dart';
 import 'package:remote_assist/pages/Registration.dart';
+import 'package:remote_assist/pages/UserProfilePage.dart';
 import 'package:remote_assist/pages/WelcomePage.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,7 +15,9 @@ class _HomePageState extends State<HomePage> {
   final PageController _pageController = PageController();
 
   final List<Widget> _pages = [
-
+    LoginPage(),
+    WelcomePage(),
+    UserProfilePage()
   ];
 
   @override
@@ -43,19 +46,16 @@ class _HomePageState extends State<HomePage> {
           CurvedNavigationBarItem(icon: Icon(Icons.video_call, size: 30, color: Colors.red[500]), label: "New Meeting"),
           CurvedNavigationBarItem(icon: Icon(Icons.logout_rounded, size: 30, color: Colors.red[500]), label: "Logout"),
           CurvedNavigationBarItem(icon: Icon(Icons.settings, size: 30, color: Colors.red[500]), label: "Settings"),
-          CurvedNavigationBarItem(icon: Icon(Icons.app_registration, size: 30, color: Colors.red[500]), label: "Registration"),
         ],
         index: _pageIndex,
         onTap: (index) {
           setState(() {
             _pageIndex = index;
             if (index == 1) {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => WelcomePage()));
-            } if (index == 0) {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfilePage()));
+            } else if (index == 0) {
               Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
-
-            }
-            else {
+            } else {
               _pageController.jumpToPage(index);
             }
           });

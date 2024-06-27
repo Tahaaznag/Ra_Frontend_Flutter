@@ -1,14 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:provider/provider.dart';
+import 'package:remote_assist/Service/web_socket_service.dart';
 import 'package:remote_assist/pages/Login.dart';
 import 'package:remote_assist/pages/OnboardingScreen.dart';
 import 'package:remote_assist/pages/Registration.dart';
+import 'package:remote_assist/pages/UserProfilePage.dart';
 import 'package:remote_assist/pages/WelcomePage.dart';
+import 'package:remote_assist/pages/chat_screen.dart';
 import 'package:remote_assist/pages/home.dart';
 import 'package:remote_assist/pages/splashpage.dart';
 
-void main() async {
-  runApp(RaApp());
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<WebSocketService>(create: (_) => WebSocketService()),
+      ],
+      child: RaApp(),
+    ),
+  );
 }
 
 class RaApp extends StatelessWidget {
@@ -19,12 +30,12 @@ class RaApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Color(0xFFB21A18), // Red primary color
-        hintColor: Color(0xFFD32F2F), // Red accent color
-        scaffoldBackgroundColor: Colors.white, // White background
+        primaryColor: Color(0xFFB21A18),
+        hintColor: Color(0xFFD32F2F),
+        scaffoldBackgroundColor: Colors.white,
         textTheme: TextTheme(),
         buttonTheme: ButtonThemeData(
-          buttonColor: Color(0xFFB21A18), // Button color
+          buttonColor: Color(0xFFB21A18),
           textTheme: ButtonTextTheme.primary,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -40,18 +51,21 @@ class RaApp extends StatelessWidget {
         ),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
-            foregroundColor: Color(0xFFB21A18), // Button text color
+            foregroundColor: Color(0xFFB21A18),
           ),
         ),
         floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: Color(0xFFB21A18), // FloatingActionButton color
+          backgroundColor: Color(0xFFB21A18),
         ),
         appBarTheme: AppBarTheme(
-          backgroundColor: Color(0xFFB21A18), // AppBar color
-          titleTextStyle: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
+          backgroundColor: Color(0xFFB21A18),
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
-
       routes: {
         "/": (context) => SplashScreen(),
         "/login": (context) => LoginPage(),
@@ -59,6 +73,8 @@ class RaApp extends StatelessWidget {
         "/register": (context) => RegisterPage(),
         "/welcome": (context) => WelcomePage(),
         "/bv": (context) => OnboardingScreen(),
+        "/chat": (context) => ChatScreen(),
+        "/user":(context)=>UserProfilePage()
       },
       initialRoute: "/",
     );
