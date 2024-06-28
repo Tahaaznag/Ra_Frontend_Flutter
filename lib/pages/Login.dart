@@ -27,6 +27,7 @@ class _LoginPageState extends State<LoginPage> {
       final success = await _authService.login(email, password);
 
       if (success) {
+        // Le token est déjà stocké dans la méthode login()
         Navigator.pushReplacementNamed(context, '/home');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

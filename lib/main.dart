@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:provider/provider.dart';
+import 'package:remote_assist/Service/AuthService.dart';
+import 'package:remote_assist/Service/auth_wrapper.dart';
 import 'package:remote_assist/Service/web_socket_service.dart';
 import 'package:remote_assist/pages/Login.dart';
 import 'package:remote_assist/pages/OnboardingScreen.dart';
 import 'package:remote_assist/pages/Registration.dart';
 import 'package:remote_assist/pages/UserProfilePage.dart';
+import 'package:remote_assist/pages/VideoCallScreen.dart';
 import 'package:remote_assist/pages/WelcomePage.dart';
 import 'package:remote_assist/pages/chat_screen.dart';
 import 'package:remote_assist/pages/home.dart';
@@ -16,6 +19,8 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider<WebSocketService>(create: (_) => WebSocketService()),
+        ChangeNotifierProvider<WebSocketService>(create: (_) => WebSocketService()), // WebRTC service
+        Provider<AuthService>(create: (_) => AuthService()),
       ],
       child: RaApp(),
     ),
@@ -69,12 +74,13 @@ class RaApp extends StatelessWidget {
       routes: {
         "/": (context) => SplashScreen(),
         "/login": (context) => LoginPage(),
-        "/home": (context) => HomePage(),
+        "/home": (context) => AuthWrapper(child: HomePage()),
         "/register": (context) => RegisterPage(),
-        "/welcome": (context) => WelcomePage(),
+        "/welcome": (context) => AuthWrapper(child: WelcomePage()),
         "/bv": (context) => OnboardingScreen(),
-        "/chat": (context) => ChatScreen(),
-        "/user":(context)=>UserProfilePage()
+        "/chat": (context) => AuthWrapper(child: ChatScreen()),
+        "/user": (context) => AuthWrapper(child: ProfileScreen()),
+        "/vd": (context) => AuthWrapper(child: VideoConferenceScreen()),// New route for video call screen
       },
       initialRoute: "/",
     );

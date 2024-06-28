@@ -1,51 +1,29 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:remote_assist/Dtos/UserRaDto.dart';
 
 class UserService {
-  final String baseUrl = 'http://10.50.100.6:8081';
+  static const String API_URL = 'http://192.168.1.107:8081';
 
-  Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('jwt_token');
-  }
-
-  Future<Map<String, dynamic>> getUserInfo() async {
-    final token = await getToken();
-    if (token == null) {
-      throw Exception('Non authentifié');
-    }
-
-    final response = await http.get(
-      Uri.parse('$baseUrl/api/user/me'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-
+  Future<UserRaDto> getCurrentUser() async {
+    final response = await http.get(Uri.parse('$API_URL/api/profile'));
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      return UserRaDto.fromJson(json.decode(response.body));
     } else {
-      throw Exception('Échec de récupération des informations utilisateur');
+      throw Exception('Échec du chargement du profil utilisateur');
     }
   }
 
-  Future<bool> updateUserInfo(Map<String, dynamic> userInfo) async {
-    final token = await getToken();
-    if (token == null) {
-      throw Exception('Non authentifié');
-    }
-
+  Future<UserRaDto> updateUser(UserRaDto user) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/api/user/update'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: json.encode(userInfo),
+      Uri.parse('$API_URL/api/profile'),
+      body: json.encode(user.toJson()),
+      headers: {'Content-Type': 'application/json'},
     );
-
-    return response.statusCode == 200;
+    if (response.statusCode == 200) {
+      return UserRaDto.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Échec de la mise à jour du profil utilisateur');
+    }
   }
 }

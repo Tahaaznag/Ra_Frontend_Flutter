@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 class AuthService {
 
-  final String baseUrl = 'http://10.50.100.6:8081';
+  final String baseUrl = 'http://192.168.1.107:8081';
 
   Future<bool> login(String email, String password) async {
     try {
@@ -72,5 +72,25 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');
     return token != null;
+  }
+  Future<bool> isAuthenticated() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token');
+    return token != null;
+  }
+
+  Future<void> setToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('jwt_token', token);
+  }
+
+  Future<void> removeToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('jwt_token');
+  }
+
+
+  Future<void> logout() async {
+    await removeToken();
   }
 }
