@@ -10,6 +10,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   UserRaDto? _user;
   final UserService _userService = UserService();
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -22,62 +23,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final user = await _userService.getCurrentUser();
       setState(() {
         _user = user;
+        _isLoading = false;
       });
     } catch (e) {
+      setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur lors du chargement du profil')),
-      );
-    }
-  }
-
-  Future<void> _updateProfile() async {
-    try {
-      await _userService.updateUser(_user!);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Profil mis à jour avec succès')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur lors de la mise à jour du profil')),
+        SnackBar(content: Text('Erreur lors du chargement du profil: $e')),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_user == null) {
-      return Scaffold(
-        appBar: AppBar(title: Text('Mon Profil')),
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(title: Text('Mon Profil')),
-      body: Padding(
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : _user == null
+          ? Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Veuillez vous connecter pour voir votre profil'),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/login');
+              },
+              child: Text('Se connecter'),
+            ),
+          ],
+        ),
+      )
+          : Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              decoration: InputDecoration(labelText: 'Nom'),
-              onChanged: (value) => setState(() => _user!.nom = value),
-              controller: TextEditingController(text: _user!.nom),
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: 'Prénom'),
-              onChanged: (value) => setState(() => _user!.prenom = value),
-              controller: TextEditingController(text: _user!.prenom),
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: 'Email'),
-              onChanged: (value) => setState(() => _user!.email = value),
-              controller: TextEditingController(text: _user!.email),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _updateProfile,
-              child: Text('Mettre à jour le profil'),
-            ),
+            Text('Nom: ${_user!.nom}', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 10),
+            Text('Prénom: ${_user!.prenom}', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 10),
+            Text('Email: ${_user!.email}', style: TextStyle(fontSize: 18)),
           ],
         ),
       ),

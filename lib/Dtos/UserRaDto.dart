@@ -1,26 +1,25 @@
 class UserRaDto {
-  String? nom;
-  String? prenom;
-  String? email;
-  // Ajoutez d'autres champs selon votre modèle
+  final int userId;
+  final String nom;
+  final String prenom;
+  final String email;
+  final List<String> roles;
 
-  UserRaDto({this.nom, this.prenom, this.email});
+  UserRaDto({
+    required this.userId,
+    required this.nom,
+    required this.prenom,
+    required this.email,
+    required this.roles,
+  });
 
   factory UserRaDto.fromJson(Map<String, dynamic> json) {
     return UserRaDto(
+      userId: json['userId'],
       nom: json['nom'],
       prenom: json['prenom'],
       email: json['email'],
-      // Initialisez d'autres champs
+      roles: json['roles'] != null ? List<String>.from(json['roles']) : [],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'nom': nom,
-      'prenom': prenom,
-      'email': email,
-      // Ajoutez d'autres champs
-    };
   }
 }
