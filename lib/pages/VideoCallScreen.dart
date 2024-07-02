@@ -7,9 +7,12 @@ class VideoConferenceScreen extends StatefulWidget {
   @override
   _VideoConferenceScreenState createState() => _VideoConferenceScreenState();
 }
+
 class _VideoConferenceScreenState extends State<VideoConferenceScreen> {
   final _localRenderer = RTCVideoRenderer();
   final _remoteRenderer = RTCVideoRenderer();
+  bool _isMicMuted = false;
+  bool _isCameraOff = false;
 
   @override
   void initState() {
@@ -24,7 +27,7 @@ class _VideoConferenceScreenState extends State<VideoConferenceScreen> {
     await webSocketService.initializePeerConnection();
     setState(() {
       _localRenderer.srcObject = webSocketService.localStream;
-      _remoteRenderer.srcObject = webSocketService.remoteStream;
+      _remoteRenderer.srcObject = webSocketService.localStream;
     });
   }
 
@@ -33,11 +36,9 @@ class _VideoConferenceScreenState extends State<VideoConferenceScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Vidéo principale (simulant le distant)
           Positioned.fill(
             child: RTCVideoView(_remoteRenderer),
           ),
-          // Vidéo locale (petite fenêtre)
           Positioned(
             top: 20,
             right: 20,
@@ -54,7 +55,6 @@ class _VideoConferenceScreenState extends State<VideoConferenceScreen> {
               ),
             ),
           ),
-          // Barre de contrôle en bas
           Positioned(
             bottom: 20,
             left: 0,
@@ -62,43 +62,38 @@ class _VideoConferenceScreenState extends State<VideoConferenceScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                IconButton(
-                  icon: Icon(Icons.more_vert, color: Colors.white),
-                  onPressed: () {},
-                ),
-                IconButton(
-                  icon: Icon(Icons.videocam, color: Colors.white),
-                  onPressed: () {},
-                ),
-                IconButton(
-                  icon: Icon(Icons.mic_off, color: Colors.white),
-                  onPressed: () {},
-                ),
-                IconButton(
-                  icon: Icon(Icons.volume_up, color: Colors.white),
-                  onPressed: () {},
-                ),
-                IconButton(
-                  icon: Icon(Icons.call_end, color: Colors.red),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
+                _buildCircularButton(Icons.mic_off, _isMicMuted, _toggleMic),
+                _buildCircularButton(Icons.videocam_off, _isCameraOff, _toggleCamera),
+                _buildCircularButton(Icons.call_end, false, _endCall, color: Colors.red),
               ],
-            ),
-          ),
-          // Nom de l'interlocuteur (simulé)
-          Positioned(
-            bottom: 80,
-            left: 20,
-            child: Text(
-              'John Doe is speaking',
-              style: TextStyle(color: Colors.white, fontSize: 18),
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildCircularButton(IconData icon, bool isActive, VoidCallback onPressed, {Color color = Colors.white}) {
+    return FloatingActionButton(
+      onPressed: onPressed,
+      backgroundColor: isActive ? Colors.red : color,
+      child: Icon(icon, color: isActive ? Colors.white : Colors.black),
+    );
+  }
+
+  void _toggleMic() {
+    setState(() => _isMicMuted = !_isMicMuted);
+    // Implement mic toggling logic
+  }
+
+  void _toggleCamera() {
+    setState(() => _isCameraOff = !_isCameraOff);
+    // Implement camera toggling logic
+  }
+
+  void _endCall() {
+    // Implement call ending logic
+    Navigator.pop(context);
   }
 
   @override

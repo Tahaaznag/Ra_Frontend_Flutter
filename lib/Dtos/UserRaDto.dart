@@ -21,5 +21,15 @@ class UserRaDto {
       email: json['email'],
       roles: json['roles'] != null ? List<String>.from(json['roles']) : [],
     );
+
+
+
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'nom': nom,
+      'prenom': prenom,
+      'email': email,
+    };
   }
 }

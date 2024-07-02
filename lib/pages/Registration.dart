@@ -1,7 +1,11 @@
+// register_page.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:remote_assist/Service/AuthService.dart';
 import 'package:remote_assist/pages/Login.dart';
+import 'package:remote_assist/widget/CustomTextField.dart';
+import 'package:remote_assist/widget/RoleDropdown.dart';
+
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -57,6 +61,12 @@ class _RegisterPageState extends State<RegisterPage> {
     Navigator.pushNamed(context, '/login');
   }
 
+  void _togglePasswordVisibility() {
+    setState(() {
+      _isPasswordVisible = !_isPasswordVisible;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,21 +95,52 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildTextField("Nom", _nameController),
+                    CustomTextField(
+                      label: "Nom",
+                      controller: _nameController,
+                      obscureText: false,
+                      isPasswordVisible: _isPasswordVisible,
+                      togglePasswordVisibility: _togglePasswordVisibility,
+                    ),
                     SizedBox(height: 20),
-                    _buildTextField("Prénom", _prenomController),
+                    CustomTextField(
+                      label: "Prénom",
+                      controller: _prenomController,
+                      obscureText: false,
+                      isPasswordVisible: _isPasswordVisible,
+                      togglePasswordVisibility: _togglePasswordVisibility,
+                    ),
                     SizedBox(height: 20),
-                    _buildTextField("Email", _emailController),
+                    CustomTextField(
+                      label: "Email",
+                      controller: _emailController,
+                      obscureText: false,
+                      isPasswordVisible: _isPasswordVisible,
+                      togglePasswordVisibility: _togglePasswordVisibility,
+                    ),
                     SizedBox(height: 20),
-                    _buildTextField("Mot de passe", _passwordController, obscureText: true),
+                    CustomTextField(
+                      label: "Mot de passe",
+                      controller: _passwordController,
+                      obscureText: true,
+                      isPasswordVisible: _isPasswordVisible,
+                      togglePasswordVisibility: _togglePasswordVisibility,
+                    ),
                     SizedBox(height: 20),
-                    _buildRoleDropdown(),
+                    RoleDropdown(
+                      selectedRole: _selectedRole,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedRole = value;
+                        });
+                      },
+                    ),
                     SizedBox(height: 30),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 30), backgroundColor: Colors.red,
+                          padding: EdgeInsets.symmetric(vertical: 30), backgroundColor: Color(0xFFB21A18),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -119,7 +160,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           "Vous avez déjà un compte ? Connectez-vous",
                           style: GoogleFonts.roboto(
                             fontSize: 16,
-                            color: Colors.red,
+                            color: Color(0xFFB21A18),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -132,99 +173,6 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildTextField(String label, TextEditingController controller, {bool obscureText = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.roboto(
-            fontSize: 18,
-            color: Colors.black,
-          ),
-        ),
-        SizedBox(height: 10),
-        TextFormField(
-          controller: controller,
-          obscureText: obscureText ? !_isPasswordVisible : false,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Veuillez entrer votre $label';
-            }
-            return null;
-          },
-          style: TextStyle(fontSize: 20, color: Colors.black),
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.grey[200],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
-            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            suffixIcon: obscureText
-                ? IconButton(
-              icon: Icon(
-                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                color: Colors.grey,
-              ),
-              onPressed: () {
-                setState(() {
-                  _isPasswordVisible = !_isPasswordVisible;
-                });
-              },
-            )
-                : null,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRoleDropdown() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Sélectionner un rôle",
-          style: GoogleFonts.roboto(
-            fontSize: 18,
-            color: Colors.black,
-          ),
-        ),
-        SizedBox(height: 10),
-        DropdownButtonFormField<String>(
-          value: _selectedRole,
-          items: [
-            DropdownMenuItem(value: "EXPERT", child: Text("Expert")),
-            DropdownMenuItem(value: "TECHNICIEN", child: Text("Technicien")),
-            DropdownMenuItem(value: "GUEST", child: Text("Guest")),
-          ],
-          onChanged: (value) {
-            setState(() {
-              _selectedRole = value;
-            });
-          },
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.grey[200],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
-            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          ),
-          validator: (value) {
-            if (value == null) {
-              return 'Veuillez sélectionner un rôle';
-            }
-            return null;
-          },
-        ),
-      ],
     );
   }
 }

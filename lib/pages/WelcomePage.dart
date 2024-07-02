@@ -75,7 +75,7 @@ class WelcomePage extends StatelessWidget {
         width: MediaQuery.of(context).size.width * 0.8,
         padding: EdgeInsets.symmetric(vertical: 15),
         decoration: BoxDecoration(
-          color: Colors.red,
+          color: Color(0xFFB21A18),
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(

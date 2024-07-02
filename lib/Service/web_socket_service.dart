@@ -1,30 +1,48 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:remote_assist/Dtos/UserRaDto.dart';
+import 'package:remote_assist/Service/UserService.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
 class WebSocketService with ChangeNotifier {
+  final UserService _userService = UserService();
+  UserRaDto? _currentUser;
   StompClient? stompClient;
   List<Map<String, dynamic>> messages = [];
 
 
-  String? userName;
 
+  Future<void> initializeUser() async {
+    try {
+      _currentUser = await _userService.getCurrentUser();
+      notifyListeners();
+    } catch (e) {
+      print('Erreur lors de la récupération des informations utilisateur: $e');
+    }
+  }
+
+  String? get userName => _currentUser?.nom;
   void connect() {
+    if (_currentUser == null) {
+      print('Erreur : Utilisateur non authentifié');
+      return;
+    }
+
     stompClient = StompClient(
       config: StompConfig(
-        url: 'ws://192.168.1.107:8081/chat-socket',
+        url: 'ws://10.50.100.6:8081/chat-socket',
         onConnect: onConnect,
         beforeConnect: () async {
-          print('Waiting to connect...');
+          print('Attente de connexion...');
           await Future.delayed(Duration(milliseconds: 200));
-          print('Connecting...');
+          print('Connexion en cours...');
         },
-        onWebSocketError: (dynamic error) => print(error.toString()),
-        onStompError: (StompFrame frame) => print(frame.toString()),
-        onDisconnect: (StompFrame frame) => print('Disconnected: ${frame.body}'),
+        onWebSocketError: (dynamic error) => print('Erreur WebSocket: $error'),
+        onStompError: (StompFrame frame) => print('Erreur STOMP: ${frame.body}'),
+        onDisconnect: (StompFrame frame) => print('Déconnecté: ${frame.body}'),
         onDebugMessage: (dynamic message) => print('Debug: $message'),
       ),
     );
@@ -33,14 +51,13 @@ class WebSocketService with ChangeNotifier {
   }
 
   void onConnect(StompFrame frame) {
-    print('Connected: ${frame.headers}');
+    print('Connecté: ${frame.headers}');
     stompClient!.subscribe(
       destination: '/topic/room1',
       callback: (StompFrame frame) {
         if (frame.body != null) {
           var message = json.decode(frame.body!);
           if (message is Map<String, dynamic> && message.containsKey('message') && message.containsKey('user')) {
-            // Ensure the date is correctly parsed
             try {
               message['date'] = DateTime.parse(message['date']);
             } catch (e) {
@@ -49,10 +66,11 @@ class WebSocketService with ChangeNotifier {
             messages.add(message);
             notifyListeners();
           }
-          print('Received message: $message');
+          print('Message reçu: $message');
         }
       },
     );
+
     stompClient!.subscribe(
       destination: '/topic/webrtc/room1',
       callback: (StompFrame frame) {
@@ -65,16 +83,24 @@ class WebSocketService with ChangeNotifier {
   }
 
   void sendMessage(String message) {
-    if (userName != null) {
+    if (userName != null && stompClient != null && stompClient!.connected) {
       stompClient!.send(
         destination: '/app/chat/room1',
-        body: json.encode({'message': message, 'user': userName, 'date': DateTime.now().toIso8601String()}),
+        body: json.encode({
+          'message': message,
+          'user': userName,
+          'date': DateTime.now().toIso8601String()
+        }),
       );
+    } else {
+      print('Erreur : Impossible d\'envoyer le message. Vérifiez la connexion et le nom d\'utilisateur.');
     }
   }
 
   void disconnect() {
-    stompClient!.deactivate();
+    if (stompClient != null && stompClient!.connected) {
+      stompClient!.deactivate();
+    }
   }
 
   RTCPeerConnection? peerConnection;

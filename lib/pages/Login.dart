@@ -152,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          backgroundColor: Colors.red,
+                          backgroundColor: Color(0xFFB21A18),
                         ),
                         onPressed: _login,
                         child: Text(

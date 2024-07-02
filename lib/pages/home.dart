@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:curved_navigation_bar_with_label/curved_navigation_bar.dart';
 import 'package:provider/provider.dart';
+import 'package:remote_assist/Dtos/UserRaDto.dart';
 import 'package:remote_assist/Service/AuthService.dart';
-import 'package:remote_assist/pages/Login.dart';
-import 'package:remote_assist/pages/Registration.dart';
+import 'package:remote_assist/Service/UserService.dart';
+import 'package:remote_assist/icons/util/ThemeNotifier.dart';
 import 'package:remote_assist/pages/UserProfilePage.dart';
 import 'package:remote_assist/pages/VideoCallScreen.dart';
-import 'package:remote_assist/pages/WelcomePage.dart';
 import 'package:remote_assist/pages/chat_screen.dart';
+import 'package:remote_assist/pages/home.dart';
+import 'package:remote_assist/pages/home_content.dart';
+import 'package:remote_assist/pages/session_screen.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,84 +17,90 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _pageIndex = 0;
-  final PageController _pageController = PageController();
+  int _currentIndex = 0;
+  UserRaDto? _user;
+  bool _isLoading = true;
 
-  final List<Widget> _pages = [
-    LoginPage(),
-    WelcomePage(),
-    ProfileScreen()
-  ];
-  void _logout(BuildContext context) async {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    await authService.logout();
-    Navigator.pushReplacementNamed(context, '/login');
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
   }
 
+  Future<void> _loadUserProfile() async {
+    final userService = UserService();
+    try {
+      final user = await userService.getCurrentUser();
+      setState(() {
+        _user = user;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading profile: $e')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("BL Remote Assist"),
+        actions: [
+          IconButton(
+            icon: Icon(themeNotifier.isDarkMode ? Icons.wb_sunny : Icons.nights_stay),
+            onPressed: () => themeNotifier.toggleTheme(),
+          ),
+        ],
+      ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : _currentIndex == 0
+          ? HomeContent(user: _user!)
+          : _currentIndex == 1
+          ? ChatScreen()
+          : _currentIndex == 2
+          ? SessionManagementScreen()
+          : ProfileScreen(),
+
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
+        type: BottomNavigationBarType.fixed,
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Chat"),
+          BottomNavigationBarItem(icon: Icon(Icons.video_call), label: "Video Call"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+        ],
+      ),
+    );
+  }
+}
+
+
+
+class DetailScreen extends StatelessWidget {
+  final String label;
+
+  DetailScreen({required this.label});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: const Text(
-          "BL Remote Assist",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
+      appBar: AppBar(title: Text(label)),
+      body: Center(
+        child: Text(
+          "Information about $label",
+          style: TextStyle(fontSize: 24),
         ),
-        backgroundColor: Colors.red[500],
-        elevation: 5,
-        centerTitle: true,
       ),
-      bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.transparent,
-        color: Colors.red[500],
-        buttonBackgroundColor: Colors.white,
-        height: 60,
-        items: [
-          CurvedNavigationBarItem(icon: Icon(Icons.person, size: 30, color: Colors.red[500]), label: "profil"),
-          CurvedNavigationBarItem(icon: Icon(Icons.video_call, size: 30, color: Colors.red[500]), label: "VideoCall"),
-          CurvedNavigationBarItem(icon: Icon(Icons.chat, size: 30, color: Colors.red[500]), label: "Chat"),
-          CurvedNavigationBarItem(icon: Icon(Icons.logout, size: 30, color: Colors.red[500]), label: "Logout"),
-        ],
-        index: _pageIndex,
-        onTap: (index) {
-          setState(() {
-            _pageIndex = index;
-            if (index == 0) {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
-            } else if (index == 1) {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => VideoConferenceScreen()));
-            } else if (index == 2) {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen()));
-            } else if (index == 3) {
-              _logout(context);
-            } else {
-              _pageController.jumpToPage(index);
-            }
-          });
-        },
-      ),
-
-
-      body: Stack(
-        children: [
-
-          PageView(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _pageIndex = index;
-              });
-            },
-            children: _pages,
-          ),
-        ],
-      ),
-
     );
   }
 }

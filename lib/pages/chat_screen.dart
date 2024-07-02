@@ -10,12 +10,21 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
   bool isConnected = false;
 
   @override
   void initState() {
     super.initState();
+    _initializeAndConnect();
+  }
+
+  Future<void> _initializeAndConnect() async {
+    final webSocketService = Provider.of<WebSocketService>(context, listen: false);
+    await webSocketService.initializeUser();
+    webSocketService.connect();
+    setState(() {
+      isConnected = true;
+    });
   }
 
   @override
@@ -32,37 +41,11 @@ class _ChatScreenState extends State<ChatScreen> {
     final webSocketService = Provider.of<WebSocketService>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Chat'),
-      ),
       body: Column(
         children: <Widget>[
           if (!isConnected) ...[
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: 'Enter your name',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (_nameController.text.isNotEmpty) {
-                  webSocketService.userName = _nameController.text;
-                  webSocketService.connect();
-                  setState(() {
-                    isConnected = true;
-                  });
-                }
-              },
-              child: Text('Connect'),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              ),
-            ),
+            CircularProgressIndicator(),
+
           ] else ...[
             Expanded(
               child: Consumer<WebSocketService>(
@@ -95,7 +78,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 message['user'],
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: isOwnMessage ? Colors.red : Colors.blue, // Changed to red
+                                  color: isOwnMessage ? Colors.red : Colors.blue,
                                 ),
                               ),
                               SizedBox(height: 5),
@@ -106,7 +89,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               SizedBox(height: 5),
                               Text(
                                 message['date'] is DateTime
-                                    ? DateFormat('hh:mm a').format(message['date'])
+                                    ? DateFormat('HH:mm').format(message['date'])
                                     : '',
                                 style: TextStyle(
                                   color: Colors.grey,

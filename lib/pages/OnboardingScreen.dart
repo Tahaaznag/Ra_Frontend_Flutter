@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:remote_assist/pages/OnboardingScreen.dart';
 import 'package:remote_assist/pages/WelcomePage.dart';
+import 'package:remote_assist/widget/OnboardingPage.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -74,7 +76,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     },
                     child: Text(
                       'Passer',
-                      style: TextStyle(fontSize: 18.0, color: Colors.red),
+                      style: TextStyle(fontSize: 18.0, color: Color(0xFFB21A18)),
                     ),
                   ),
               ],
@@ -85,6 +87,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             left: 100.0,
             right: 100.0,
             child: _currentPage == _pages.length - 1
+
                 ? ElevatedButton(
               onPressed: () {
                 Navigator.pushReplacement(
@@ -95,49 +98,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Text('Commencer'),
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor: Colors.red,
+                backgroundColor: Color(0xFFB21A18),
               ),
             )
-                : SizedBox(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class OnboardingPage extends StatelessWidget {
-  final String image;
-  final String title;
-  final String description;
-  final bool lastPage;
-
-  OnboardingPage({
-    required this.image,
-    required this.title,
-    required this.description,
-    this.lastPage = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(image),
-          SizedBox(height: 32.0),
-          Text(
-            title,
-            style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold, color: Colors.black),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 16.0),
-          Text(
-            description,
-            style: TextStyle(fontSize: 16.0, color: Colors.black),
-            textAlign: TextAlign.center,
+                : SizedBox(height: 40),
           ),
         ],
       ),
