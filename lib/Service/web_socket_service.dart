@@ -33,7 +33,7 @@ class WebSocketService with ChangeNotifier {
 
     stompClient = StompClient(
       config: StompConfig(
-        url: 'ws://10.50.100.6:8081/chat-socket',
+        url: 'ws://192.168.1.118:8081/chat-socket',
         onConnect: onConnect,
         beforeConnect: () async {
           print('Attente de connexion...');

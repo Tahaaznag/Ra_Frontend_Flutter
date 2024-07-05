@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:remote_assist/Dtos/SessioRaDto.dart';
-import 'package:remote_assist/Dtos/UserRaDto.dart';
 import 'package:remote_assist/Service/SessionService.dart';
-import 'package:remote_assist/Service/UserService.dart';
-
 
 class SessionManagementScreen extends StatefulWidget {
   @override
@@ -30,11 +27,10 @@ class _SessionManagementScreenState extends State<SessionManagementScreen> {
       sessionName: sessionNameController.text,
       dateDebut: startDate!,
       dateFin: endDate!,
-      userId: 123, // Remplacez par l'ID de l'utilisateur actuel
     );
 
     try {
-      final createdSession = await sessionService.createSession(newSession, 123);
+      final createdSession = await sessionService.createSession(newSession);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Session créée avec succès : ${createdSession.roomCode}')),
       );
@@ -54,7 +50,7 @@ class _SessionManagementScreenState extends State<SessionManagementScreen> {
     }
 
     try {
-      final joinedSession = await sessionService.joinSession(roomCodeController.text, 123);
+      final joinedSession = await sessionService.joinSession(roomCodeController.text);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Session rejointe avec succès : ${joinedSession.sessionName}')),
       );

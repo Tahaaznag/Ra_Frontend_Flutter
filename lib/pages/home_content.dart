@@ -27,7 +27,7 @@ class HomeContent extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 40,
-                  backgroundImage: AssetImage('lib/icons/images/bl.jpg'), // Replace with your asset image path
+                  backgroundImage: AssetImage('lib/icons/images/profile.png'), // Replace with your asset image path
                 ),
                 SizedBox(height: 10),
                 Text(

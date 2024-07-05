@@ -1,16 +1,28 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:remote_assist/Dtos/SessioRaDto.dart';
 
 class SessionService {
-  static const String baseUrl = 'http://10.50.100.6:8081'; // Remplacez par votre URL de base
+  static const String baseUrl = 'http://192.168.1.118:8081';
   static const String sessionEndpoint = '/api/session';
+  final FlutterSecureStorage _storage = FlutterSecureStorage();
 
-  Future<SessionRaDto> createSession(SessionRaDto sessionDto, int userId) async {
+  Future<String?> _getToken() async {
+    return await _storage.read(key: 'jwt_token');
+  }
+
+  Future<SessionRaDto> createSession(SessionRaDto sessionDto) async {
+    final token = await _getToken();
+    if (token == null) {
+      throw Exception('Aucun token d\'authentification trouvé');
+    }
+
     final response = await http.post(
-      Uri.parse('$baseUrl$sessionEndpoint/create?userId=$userId'),
-      headers: <String, String>{
+      Uri.parse('$baseUrl$sessionEndpoint/create'),
+      headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode(sessionDto.toJson()),
     );
@@ -22,11 +34,17 @@ class SessionService {
     }
   }
 
-  Future<SessionRaDto> joinSession(String roomCode, int userId) async {
+  Future<SessionRaDto> joinSession(String roomCode) async {
+    final token = await _getToken();
+    if (token == null) {
+      throw Exception('Aucun token d\'authentification trouvé');
+    }
+
     final response = await http.post(
-      Uri.parse('$baseUrl$sessionEndpoint/join/$roomCode?userId=$userId'),
-      headers: <String, String>{
+      Uri.parse('$baseUrl$sessionEndpoint/join?roomCode=$roomCode'),
+      headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
       },
     );
 
