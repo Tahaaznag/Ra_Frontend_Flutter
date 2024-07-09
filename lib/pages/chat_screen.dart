@@ -4,6 +4,10 @@ import 'package:intl/intl.dart';
 import 'package:remote_assist/Service/web_socket_service.dart';
 
 class ChatScreen extends StatefulWidget {
+  final String roomCode;
+
+  ChatScreen({required this.roomCode});
+
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
@@ -21,7 +25,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _initializeAndConnect() async {
     final webSocketService = Provider.of<WebSocketService>(context, listen: false);
     await webSocketService.initializeUser();
-    webSocketService.connect();
+    webSocketService.connect(widget.roomCode);
     setState(() {
       isConnected = true;
     });
@@ -41,19 +45,24 @@ class _ChatScreenState extends State<ChatScreen> {
     final webSocketService = Provider.of<WebSocketService>(context);
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Chat Room: ${widget.roomCode}'),
+      ),
       body: Column(
         children: <Widget>[
-          if (!isConnected) ...[
-            CircularProgressIndicator(),
-
-          ] else ...[
+          if (!isConnected)
+            Center(child: CircularProgressIndicator())
+          else
             Expanded(
               child: Consumer<WebSocketService>(
                 builder: (context, webSocketService, child) {
+                  var roomMessages = webSocketService.getMessagesForRoom(widget.roomCode);
+                  print('Building ListView. Message count: ${roomMessages.length}');
                   return ListView.builder(
-                    itemCount: webSocketService.messages.length,
+                    itemCount: roomMessages.length,
                     itemBuilder: (context, index) {
-                      var message = webSocketService.messages[index];
+                      var message = roomMessages[index];
+                      print('Building message at index $index: $message');
                       var isOwnMessage = message['user'] == webSocketService.userName;
                       return Align(
                         alignment: isOwnMessage ? Alignment.centerRight : Alignment.centerLeft,
@@ -61,7 +70,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                           padding: EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: isOwnMessage ? Color(0xFFFFCDD2) : Colors.white, // Changed to red
+                            color: isOwnMessage ? Color(0xFFFFCDD2) : Colors.white,
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
@@ -75,7 +84,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                message['user'],
+                                message['user']?.toString() ?? 'Unknown User',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: isOwnMessage ? Colors.red : Colors.blue,
@@ -83,13 +92,13 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                               SizedBox(height: 5),
                               Text(
-                                message['message'] ?? '',
+                                message['message']?.toString() ?? '',
                                 style: TextStyle(color: isOwnMessage ? Colors.black : Colors.black87),
                               ),
                               SizedBox(height: 5),
                               Text(
-                                message['date'] is DateTime
-                                    ? DateFormat('HH:mm').format(message['date'])
+                                message['date'] != null
+                                    ? DateFormat('HH:mm').format(DateTime.parse(message['date']))
                                     : '',
                                 style: TextStyle(
                                   color: Colors.grey,
@@ -105,42 +114,42 @@ class _ChatScreenState extends State<ChatScreen> {
                 },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: TextField(
-                      controller: _messageController,
-                      decoration: InputDecoration(
-                        hintText: 'Enter message',
-                        filled: true,
-                        fillColor: Colors.grey.shade100,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: TextField(
+                    controller: _messageController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter message',
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
                       ),
                     ),
                   ),
-                  SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_messageController.text.isNotEmpty) {
-                        webSocketService.sendMessage(_messageController.text);
-                        _messageController.clear();
-                      }
-                    },
-                    child: Icon(Icons.send),
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.all(14), backgroundColor: Theme.of(context).primaryColor,
-                      shape: CircleBorder(),
-                    ),
+                ),
+                SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_messageController.text.isNotEmpty) {
+                      webSocketService.sendMessage(widget.roomCode, _messageController.text);
+                      _messageController.clear();
+                    }
+                  },
+                  child: Icon(Icons.send),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.all(14),
+                    backgroundColor: Theme.of(context).primaryColor,
+                    shape: CircleBorder(),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ],
       ),
     );

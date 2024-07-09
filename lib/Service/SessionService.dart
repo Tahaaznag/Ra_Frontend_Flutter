@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:remote_assist/Dtos/SessioRaDto.dart';
 
 class SessionService {
-  static const String baseUrl = 'http://192.168.1.118:8081';
+  static const String baseUrl = 'http://10.50.100.26:8081';
   static const String sessionEndpoint = '/api/session';
   final FlutterSecureStorage _storage = FlutterSecureStorage();
 
@@ -52,6 +52,27 @@ class SessionService {
       return SessionRaDto.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to join session');
+    }
+  }
+  Future<List<SessionRaDto>> getSessionsByUser() async {
+    final token = await _getToken();
+    if (token == null) {
+      throw Exception('Aucun token d\'authentification trouvé');
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl$sessionEndpoint/mysessions'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body);
+      return data.map((item) => SessionRaDto.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to fetch sessions');
     }
   }
 }

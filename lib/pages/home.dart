@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:remote_assist/Dtos/UserRaDto.dart';
 import 'package:remote_assist/Service/AuthService.dart';
+import 'package:remote_assist/Service/SessionService.dart';
 import 'package:remote_assist/Service/UserService.dart';
 import 'package:remote_assist/icons/util/ThemeNotifier.dart';
 import 'package:remote_assist/pages/UserProfilePage.dart';
@@ -10,6 +11,9 @@ import 'package:remote_assist/pages/chat_screen.dart';
 import 'package:remote_assist/pages/home.dart';
 import 'package:remote_assist/pages/home_content.dart';
 import 'package:remote_assist/pages/session_screen.dart';
+
+import '../Dtos/SessioRaDto.dart';
+import 'SessionListScreen.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,11 +24,13 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   UserRaDto? _user;
   bool _isLoading = true;
+  List<SessionRaDto> _sessions = [];
 
   @override
   void initState() {
     super.initState();
     _loadUserProfile();
+    _loadUserSessions();
   }
 
   Future<void> _loadUserProfile() async {
@@ -41,6 +47,20 @@ class _HomePageState extends State<HomePage> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error loading profile: $e')),
+      );
+    }
+  }
+
+  Future<void> _loadUserSessions() async {
+    final sessionService = SessionService();
+    try {
+      final sessions = await sessionService.getSessionsByUser();
+      setState(() {
+        _sessions = sessions;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading sessions: $e')),
       );
     }
   }
@@ -62,11 +82,11 @@ class _HomePageState extends State<HomePage> {
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : _currentIndex == 0
-          ? HomeContent(user: _user!)
+          ?  HomeContent(user: _user!)
           : _currentIndex == 1
-          ? ChatScreen()
-          : _currentIndex == 2
           ? SessionManagementScreen()
+          : _currentIndex == 2
+          ? SessionListScreen(sessions: _sessions)
           : ProfileScreen(),
 
       bottomNavigationBar: BottomNavigationBar(
@@ -75,31 +95,10 @@ class _HomePageState extends State<HomePage> {
         type: BottomNavigationBarType.fixed,
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Chat"),
-          BottomNavigationBarItem(icon: Icon(Icons.video_call), label: "Video Call"),
+          BottomNavigationBarItem(icon: Icon(Icons.video_call), label: "Sessions"),
+          BottomNavigationBarItem(icon: Icon(Icons.history), label: "Historique"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
-      ),
-    );
-  }
-}
-
-
-
-class DetailScreen extends StatelessWidget {
-  final String label;
-
-  DetailScreen({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(label)),
-      body: Center(
-        child: Text(
-          "Information about $label",
-          style: TextStyle(fontSize: 24),
-        ),
       ),
     );
   }

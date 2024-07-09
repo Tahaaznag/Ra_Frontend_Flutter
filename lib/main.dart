@@ -98,9 +98,7 @@ class RaApp extends StatelessWidget {
             "/register": (context) => RegisterPage(),
             "/welcome": (context) => AuthWrapper(child: WelcomePage()),
             "/bv": (context) => OnboardingScreen(),
-            "/chat": (context) => AuthWrapper(child: ChatScreen()),
             "/user": (context) => AuthWrapper(child: ProfileScreen()),
-            "/vd": (context) => AuthWrapper(child: VideoConferenceScreen()),
             "/ss": (context) => AuthWrapper(child: SessionManagementScreen()),
 
 
