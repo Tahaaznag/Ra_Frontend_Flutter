@@ -5,7 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 
 class UserService {
-  static const String API_URL = 'http://10.50.100.26:8081';
+  static const String API_URL = 'http://192.168.1.135:8081';
   final FlutterSecureStorage _storage = FlutterSecureStorage();
 
   Future<UserRaDto> getCurrentUser() async {

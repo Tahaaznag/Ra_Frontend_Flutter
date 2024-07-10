@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:remote_assist/Dtos/SessioRaDto.dart';
 
 class SessionService {
-  static const String baseUrl = 'http://10.50.100.26:8081';
+  static const String baseUrl = 'http://192.168.1.135:8081';
   static const String sessionEndpoint = '/api/session';
   final FlutterSecureStorage _storage = FlutterSecureStorage();
 

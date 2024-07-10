@@ -73,7 +73,7 @@ class _SessionManagementScreenState extends State<SessionManagementScreen> {
       if (joinedSession != null) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ChatScreen(roomCode: roomCodeController.text)),
+          MaterialPageRoute(builder: (context) => VideoScreen(roomCode: roomCodeController.text)),
         );
       }
     } catch (e) {

@@ -28,7 +28,7 @@ class WebSocketService with ChangeNotifier {
     print('Connecting to room: $roomCode');
     _stompClient = StompClient(
       config: StompConfig(
-        url: 'ws://10.50.100.26:8081/chat-socket',
+        url: 'ws://192.168.1.135:8081/chat-socket',
         onConnect: (StompFrame frame) {
           print('Connected to WebSocket');
           _isConnected = true;

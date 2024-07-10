@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:provider/provider.dart';
 import 'package:remote_assist/Service/AuthService.dart';
+import 'package:remote_assist/Service/WebRTCService.dart';
 import 'package:remote_assist/Service/auth_wrapper.dart';
 import 'package:remote_assist/Service/web_socket_service.dart';
 import 'package:remote_assist/icons/util/ThemeNotifier.dart';
@@ -18,7 +19,7 @@ import 'package:remote_assist/pages/splashpage.dart';
 
 void main() {
   runApp(
-    MultiProvider(
+      MultiProvider(
       providers: [
         ChangeNotifierProvider<WebSocketService>(create: (_) => WebSocketService()),
         Provider<AuthService>(create: (_) => AuthService()),
@@ -31,6 +32,7 @@ void main() {
 
 class RaApp extends StatelessWidget {
   const RaApp({Key? key});
+
 
   @override
   Widget build(BuildContext context) {
