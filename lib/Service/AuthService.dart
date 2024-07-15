@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://192.168.1.135:8081';
+  static const String baseUrl = 'http://10.50.100.26:8081';
 
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 

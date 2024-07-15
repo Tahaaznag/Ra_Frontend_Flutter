@@ -29,7 +29,7 @@ class _VideoScreenState extends State<VideoScreen> {
     await _remoteRenderer.initialize();
 
     _webRTCService = WebRTCService(
-      'ws://192.168.1.135:8081/webrtc-signaling',
+      'ws://10.50.100.26:8081/webrtc-signaling',
       widget.roomCode,
     );
 

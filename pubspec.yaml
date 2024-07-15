@@ -40,7 +40,7 @@ dependencies:
   http: ^1.2.1
   stomp_dart_client: ^0.4.4
   web_socket_channel: ^2.1.0
-  flutter_webrtc: ^0.10.7
+  flutter_webrtc: ^0.10.8
   permission_handler: ^11.3.1
   shared_preferences: ^2.0.15
   animated_text_kit: ^4.2.2
