@@ -17,6 +17,7 @@ class _VideoScreenState extends State<VideoScreen> {
   final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
   bool _isCallActive = false;
   bool _isScreenSharing = false;
+  bool _isInitiator = false;
 
   @override
   void initState() {
@@ -25,6 +26,7 @@ class _VideoScreenState extends State<VideoScreen> {
   }
 
   Future<void> _initializeService() async {
+    print("Initializing service");
     await _localRenderer.initialize();
     await _remoteRenderer.initialize();
 
@@ -34,6 +36,7 @@ class _VideoScreenState extends State<VideoScreen> {
     );
 
     _webRTCService.onLocalStream = (stream) {
+      print("Local stream received in VideoScreen");
       setState(() {
         _localRenderer.srcObject = stream;
       });
@@ -41,20 +44,23 @@ class _VideoScreenState extends State<VideoScreen> {
     };
 
     _webRTCService.onRemoteStream = (stream) {
+      print('Remote stream received in VideoScreen');
       setState(() {
         _remoteRenderer.srcObject = stream;
         _isCallActive = true;
       });
-      print('Remote stream set');
     };
 
     await _webRTCService.initializePeerConnection();
     _webRTCService.connect();
+    print("Service initialized");
   }
 
   Future<void> _startCall({bool isScreenSharing = false}) async {
     try {
+      print("Starting call (screen sharing: $isScreenSharing)");
       await _webRTCService.startLocalStream(isScreenSharing: isScreenSharing);
+      _isInitiator = true;
       await _webRTCService.createOffer();
       setState(() {
         _isCallActive = true;
@@ -62,14 +68,39 @@ class _VideoScreenState extends State<VideoScreen> {
       });
       print('Call started');
     } catch (e) {
-      print('Erreur lors du démarrage de l\'appel : $e');
+      print('Error starting call: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur lors du démarrage de l\'appel')),
+        SnackBar(content: Text('Error starting call: $e')),
+      );
+    }
+  }
+
+  Future<void> _joinCall({bool isScreenSharing = false}) async {
+    try {
+      print("Joining call (screen sharing: $isScreenSharing)");
+      await _webRTCService.startLocalStream(isScreenSharing: isScreenSharing);
+      setState(() {
+        _isCallActive = true;
+        _isScreenSharing = isScreenSharing;
+      });
+
+      print("Waiting for offer");
+      await _webRTCService.waitForOffer();
+
+      print("Creating answer");
+      await _webRTCService.createAnswer();
+
+      print('Joined call');
+    } catch (e) {
+      print('Error joining call: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error joining call: $e')),
       );
     }
   }
 
   void _endCall() {
+    print("Ending call");
     _webRTCService.dispose();
     setState(() {
       _isCallActive = false;
@@ -81,6 +112,7 @@ class _VideoScreenState extends State<VideoScreen> {
   }
 
   void _toggleScreenSharing() async {
+    print("Toggling screen sharing");
     if (_isScreenSharing) {
       await _startCall(isScreenSharing: false);
     } else {
@@ -93,7 +125,7 @@ class _VideoScreenState extends State<VideoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Appel Vidéo - Salle ${widget.roomCode}'),
+        title: Text('Video Call - Room ${widget.roomCode}'),
       ),
       body: Column(
         children: [
@@ -118,14 +150,18 @@ class _VideoScreenState extends State<VideoScreen> {
                 if (!_isCallActive)
                   ElevatedButton(
                     onPressed: () => _startCall(),
-                    child: Text('Démarrer l\'appel'),
+                    child: Text('Start Call'),
                   ),
+                ElevatedButton(
+                  onPressed: _joinCall,
+                  child: Text('Join Call'),
+                ),
                 if (_isCallActive)
                   ElevatedButton(
                     onPressed: _toggleScreenSharing,
                     child: Text(_isScreenSharing
-                        ? 'Arrêter le partage d\'écran'
-                        : 'Partager l\'écran'),
+                        ? 'Stop Screen Sharing'
+                        : 'Start Screen Sharing'),
                   ),
                 if (_isCallActive)
                   ElevatedButton(

@@ -38,7 +38,7 @@ dependencies:
   curved_navigation_bar_with_label: ^2.1.4
   google_fonts: ^6.2.1
   http: ^1.2.1
-  stomp_dart_client: ^0.4.4
+  stomp_dart_client: ^2.0.0
   web_socket_channel: ^2.1.0
   flutter_webrtc: ^0.10.8
   permission_handler: ^11.3.1

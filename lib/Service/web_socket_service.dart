@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:remote_assist/Dtos/UserRaDto.dart';
 import 'package:remote_assist/Service/UserService.dart';
-import 'package:stomp_dart_client/stomp.dart';
-import 'package:stomp_dart_client/stomp_config.dart';
-import 'package:stomp_dart_client/stomp_frame.dart';
+import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 class WebSocketService with ChangeNotifier {
   late StompClient _stompClient;
